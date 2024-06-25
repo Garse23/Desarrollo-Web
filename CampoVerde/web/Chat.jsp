@@ -30,7 +30,7 @@ Integer rolUsuario = (Integer) session.getAttribute("rolUsuario");
             <nav class="navbar navbar-brand">
                 <div class="row w-100">
                     <div class="col-3">
-                        <a href="indexSession.jsp"><img src="imagenes/logo.png" alt="logo" class="logo" style="width:100px"></a>
+                        <a href="index.jsp"><img src="imagenes/logo.png" alt="logo" class="logo" style="width:100px"></a>
                     </div>
                     <div class="col-6 offset-3 text-end">
                         <a href="login.jsp"><img src="imagenes/login.png" alt="Imagen 1"style="width:100px"></a>
