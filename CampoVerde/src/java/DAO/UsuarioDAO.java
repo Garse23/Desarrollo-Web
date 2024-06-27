@@ -1,5 +1,7 @@
 package DAO;
 
+import java.sql.SQLException;
+import java.util.List;
 import modelo.Usuario;
 
 public interface UsuarioDAO {
@@ -10,4 +12,6 @@ public interface UsuarioDAO {
     int seleccionarRol(Usuario usuario);
     int seleccionarHabilitado(Usuario usuario);
     String SeleccionarNombreUsuario(Usuario usuario);
+    String SeleccionarNombreDestinatario(Usuario usuario);
+    List<Usuario> obtenerUsuariosHabilitados() throws SQLException, ClassNotFoundException;
 }

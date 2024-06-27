@@ -32,19 +32,22 @@ public class procesarLogin extends HttpServlet {
         Usuario usuario = new Usuario();
         usuario.setCorreo(correo);
         usuario.setContrasena(contrasena);
-        idRol = usuariodao.seleccionarRol(usuario);
         idUsuario = usuariodao.seleccionarID(usuario);
-        usuario.setRol(idRol);
         usuario.setId(idUsuario);
+        idRol = usuariodao.seleccionarRol(usuario);
+                usuario.setRol(idRol);
 
         NombreUsuario = usuariodao.SeleccionarNombreUsuario(usuario);
         HttpSession session = request.getSession();
         int habilitado = usuariodao.seleccionarHabilitado(usuario);
-        if (habilitado != 2) {
+        if (habilitado == 1) {
             session.setAttribute("nombreUsuario", NombreUsuario);
             session.setAttribute("rolUsuario", idRol);
             session.setAttribute("idUsuario", idUsuario);
+            response.sendRedirect("index.jsp");
+            
+        }else{
+            response.sendRedirect("login.jsp");
         }
-        response.sendRedirect("index.jsp");
     }
 }

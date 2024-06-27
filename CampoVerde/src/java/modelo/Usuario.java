@@ -2,6 +2,7 @@ package modelo;
 
 public class Usuario {
     private int id;
+    private String Nombre;
     private String correo;
     private String contrasena;
     private int rol;
@@ -47,4 +48,13 @@ public class Usuario {
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
     }
+
+    public String getNombre() {
+        return Nombre;
+    }
+
+    public void setNombre(String Nombre) {
+        this.Nombre = Nombre;
+    }
+    
 }

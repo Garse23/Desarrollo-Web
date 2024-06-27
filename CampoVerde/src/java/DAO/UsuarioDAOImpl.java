@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modelo.Usuario;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UsuarioDAOImpl implements UsuarioDAO {
 
@@ -93,10 +95,9 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             ConexionDB conexion = ConexionDB.getInstancia();
             Connection conn = conexion.getConnection();
             try {
-                String sql = "SELECT idrol FROM usuario WHERE correoUsuario=? and passUsuario=?";
+                String sql = "SELECT idrol FROM usuario WHERE idusuario=?";
                 stmt = conn.prepareStatement(sql);
-                stmt.setString(1, usuario.getCorreo());
-                stmt.setString(2, usuario.getContrasena());
+                stmt.setInt(1, usuario.getId());
                 rs = stmt.executeQuery();
                 if (rs.next()) {
                     idRol = rs.getInt("idrol");
@@ -169,6 +170,60 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     }
 
     @Override
+    public String SeleccionarNombreDestinatario(Usuario usuario) {
+        String Nombre = "";
+        int idRol = usuario.getRol();
+        try {
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+            ConexionDB conexion = ConexionDB.getInstancia();
+            Connection conn = conexion.getConnection();
+            String sql = null;
+            try {
+                switch (idRol) {
+                    case 1:
+                        sql = "SELECT nomEmpleado FROM empleado inner join usuario where idusuario=?";
+                        break;
+                    case 2:
+                        sql = "SELECT nomProveedor FROM proveedor inner join usuario where idusuario=?";
+                        break;
+                    case 3:
+                        sql = "SELECT nomCliente FROM cliente inner join usuario where idusuario=?";
+                        break;
+                    case 4:
+                        sql = "SELECT nomEmpleado FROM empleado inner join usuario where idusuario=?";
+                }
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1, usuario.getId());
+                rs = stmt.executeQuery();
+                if (rs.next()) {
+                    switch (idRol) {
+                        case 1:
+                            Nombre = rs.getString("nomEmpleado");
+                        case 2:
+                            Nombre = rs.getString("nomProveedor");
+                        case 3:
+                            Nombre = rs.getString("nomCliente");
+                        case 4:
+                            Nombre = rs.getString("nomEmpleado");
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // Manejo de errores si es necesario
+            } finally {
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(UsuarioDAOImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return Nombre;
+    }
+    
+
+    @Override
     public int seleccionarHabilitado(Usuario usuario) {
         int habilitado=0;
         try {
@@ -198,6 +253,47 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         }
         return habilitado;
     }
+
+    @Override
+    public List<Usuario> obtenerUsuariosHabilitados() throws SQLException, ClassNotFoundException {
+    PreparedStatement stmt = null;
+        ResultSet rs = null;
+        List<Usuario> Usuarios = new ArrayList<>();
+        ConexionDB conexion = ConexionDB.getInstancia();
+        Connection conn = conexion.getConnection();
+        try {
+            String sql = "SELECT * FROM usuario WHERE idhabilitado=1";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int idUsuario = rs.getInt("idusuario");
+                String Correo = rs.getString("correoUsuario");
+                String Contrasena = rs.getString("passUsuario");
+                int rol = rs.getInt("idrol");
+                int Habilitado = rs.getInt("idhabilitado");
+                
+                Usuario usuario = new Usuario() ;
+                usuario.setId(idUsuario);
+                usuario.setCorreo(Correo);
+                usuario.setContrasena(Contrasena);
+                usuario.setRol(rol);
+                usuario.setHabilitado(Habilitado);
+                
+                Usuarios.add(usuario);
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+
+        return Usuarios;
+    }
+    
     
 
 }

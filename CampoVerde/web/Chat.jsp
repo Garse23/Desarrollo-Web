@@ -6,6 +6,8 @@
 <%@ page import="modelo.Mensajes" %>
 <%@ page import="DAO.MensajesDAO" %>
 <%@ page import="DAO.MensajesDAOImpl" %>
+<%@ page import="java.sql.Date"%>
+<%@ page import="java.sql.Time"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -59,15 +61,17 @@ Integer rolUsuario = (Integer) session.getAttribute("rolUsuario");
                     %>
                     <% for (Usuario usuario : usuarios) { %>        
                     <br>
-                    <div class="btn btn-outline-primary">
-                        <form action="DefinirDestinatario" method="post" >
-                            <input type="hidden" name="id" id="id" value="<%=usuario.getId()%>">
-                            <label>Nombre: <%=usuario.getCorreo()%></label>
-                            <br>
-                            <label>Mensaje:</label><br>
-                            <label>Conexion:</label><br>
-                            <input type="submit" class="btn btn-outline-primary" value="Acceder">
-                        </form>
+                    <div class="container-fluid">
+                        <div class="btn btn-outline-primary">
+                            <form action="DefinirDestinatario" method="post" >
+                                <input type="hidden" name="id" id="id" value="<%=usuario.getId()%>">
+                                <label>Nombre: <%=usuario.getCorreo()%></label>
+                                <br>
+                                <label>Mensaje:</label><br>
+                                <label>Conexion:</label><br>
+                                <input type="submit" class="btn btn-outline-primary" value="Acceder">
+                            </form>
+                        </div>
                     </div>
                     <%}%>
                 </div>
@@ -75,7 +79,7 @@ Integer rolUsuario = (Integer) session.getAttribute("rolUsuario");
             <div class="col-10 text-end">
                 <div class="card">
                     <div class="card-header">nombre</div>
-                    <div class="card-body">
+                    <div class="card-body" >
                         <%
                         MensajesDAO mensajesDAO = new MensajesDAOImpl();
                         List<Mensajes> mensajes = null;
@@ -94,8 +98,15 @@ Integer rolUsuario = (Integer) session.getAttribute("rolUsuario");
                             e.printStackTrace();
                         }
                         %>
-                        
+                        <% Date fecha = null; %>
+
                         <% for (Mensajes msg : mensajes) { %>
+                        <% if (fecha == null || !fecha.equals(msg.getFecha())) {
+                        fecha = msg.getFecha(); %>
+                        <div class="text-center"><%= msg.getFecha() %></div>
+                        <hr>
+                        <% } %>
+
                         <%if(msg.getIdUEnvio()==IdUsuario){%>
                         <div class="col-7 offset-5 text-end" >
                             <div class="row">

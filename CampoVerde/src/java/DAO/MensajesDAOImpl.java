@@ -62,7 +62,7 @@ public class MensajesDAOImpl implements MensajesDAO {
         ConexionDB conexion = ConexionDB.getInstancia();
         Connection conn = conexion.getConnection();
         try {
-            String sql = "SELECT * FROM mensajes where (idusuario1=? and idusuario2=? or idusuario1=? and idusuario2=?) and idhabilitado=1";
+            String sql = "SELECT * FROM mensajes where (idusuario1=? and idusuario2=? or idusuario1=? and idusuario2=?) and idhabilitado=1 order by fechaMensaje, horaMensaje";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1,mensaje.getIdUEnvio());
             stmt.setInt(2,mensaje.getIdURecibido());

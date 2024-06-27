@@ -1,29 +1,40 @@
-<%@ page import="controladores.ProductoServlet" %>
-<%@ page import="modelo.Producto" %>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="modelo.Foro" %>
+<%@ page import="DAO.ForoDAO" %>
+<%@ page import="DAO.ForoDAOImpl" %>
+<%@ page import="java.sql.Date"%>
+<%@ page import="java.sql.Time"%>
 <%@ page import="java.util.List" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CampoVerde</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Foros</title>
         <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
         <script src="js/bootstrap.min.js"></script>
         <script src="js/bootstrap.bundle.min.js"></script>
     </head>
     <% String nombreUsuario = (String) session.getAttribute("nombreUsuario");
-   Integer rolUsuario = (Integer) session.getAttribute("rolUsuario");
-    Integer IdUsuario = (Integer) session.getAttribute("idUsuario");%>
+       Integer rolUsuario = (Integer) session.getAttribute("rolUsuario");
+       Integer IdForo = (Integer) session.getAttribute("Foro");
+        Integer IdUsuario = (Integer) session.getAttribute("idUsuario");%>
     <body>
+        <%if (IdUsuario==null){
+        response.sendRedirect("index.jsp");
+            }%>
         <header>
             <nav class="navbar navbar-dark">
                 <div class="row w-100 align-items-center text-end">
                     <div class="col-3 text-start">
                         <a href="index.jsp"><img src="imagenes/logo.png" alt="logo" class="" style="width:100px"></a>
                     </div>
+                    <div class="col-4 offset-1">
+                        <div class="text-center">
+                            <h2>Foros de discusión</h2>
+                        </div>
+                    </div>
                     <%if (IdUsuario != null){ %>
-                    <div class="col-2 offset-6">
+                    <div class="col-2 offset-1">
                         <div class="dropdown">
                             <button class="btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="imagenes/person-fill.svg" alt="alt" style="width: 30px"/>
@@ -51,10 +62,10 @@
                                     <%
                                     default:%>
                                 <li><a class="dropdown-item text-bg-danger" href="CerrarSesion">Cerrar Sesión</a></li>
-                                <%
-                                        break;
-                                }
-                            }%>
+                                    <%
+                                            break;
+                                    }
+                                }%>
                             </ul>
                         </div>
                     </div>
@@ -73,57 +84,64 @@
                     </div>
                 </div>
             </nav>
-            <div class="container-fluid">
-                <div class="navbar navbar-brand" style="background-color: #4CAF50">
-                    <div class="row w-100 text-center">
-                        <div class ="col-4">
-                            <a href="index.jsp" class="btn btn-outline-light">Inicio</a>
-                        </div>
-                        <div class ="col-4">
-                            <a href="productos.jsp" class="btn btn-outline-light">Productos</a>
-                        </div>
-                        <div class ="col-4">
-                            <a href="#sobre-nosotros" class="btn btn-outline-light">Sobre nosotros</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <nav style="background: #4caf50">
+                <br>
+            </nav>
         </header>
-        <div class="container-fluid"> 
-            <img src="imagenes/anuncio.png" alt="" style="width:98.95%">
-        </div>
-        <br>
-        <div class="container-fluid">
-            <div class="row">
-                <% 
-                    ProductoServlet productoServlet = new ProductoServlet();
-                    List<Producto> productos = null;
-                    try {
-                        productos = productoServlet.obtenerProductosHabilitados();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+        <%
+        ForoDAO foroDAO = new ForoDAOImpl();
+        List<Foro> foros = null;
+        Foro foro = new Foro();
+        foro.setIdHabilitado(1);
             
-                    if (productos != null) {
-                        for (Producto producto : productos) {
-                %>
-                <div class="card col-3">
-                    <form action="AgregarCarrito" method="post">
-                    <div class="card-body">
-                        <img src="imagenes/anuncio.png" alt="Producto" style="width: 100%">
-                        <input type="hidden" id="idProducto" name="idProducto" value="<%=producto.getIdProducto()%>">
-                        <input type="hidden" id="cantidad" name="cantidad" value="1">
-                        <input type="hidden" id="origen" name="origen" value="index">
-                        <h3><%= producto.getNomProducto()%></h3>
-                        <p>Precio: $<%= producto.getPrecioProducto() %></p>
-                        <button class="btn btn-success">Agregar al carrito</button>
+            try {
+            foros = foroDAO.obtenerForos(foro);
+            } catch (Exception e) {
+            e.printStackTrace();
+            }
+        %>
+        <br>
+        <div class="row">
+            <div class="col-2">
+
+            </div>
+            <div class="col-8">
+                <% for (Foro f : foros) { %>
+                <% if(IdForo==f.getIdForo()){ %>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-10">
+                                <%=f.getNombreForo()%>
+                            </div>
+                            <div class="col-2 text-end">
+                                <%=f.getFechaForo()%>
+                            </div>
+                        </div>
                     </div>
-                    </form>
+                    <div class="card-body">
+                        <div class="">
+                            <%=f.getAnuncioForo()%>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <%=f.getIdUsuario()%>
+                    </div>
                 </div>
-                <% 
-                        }
-                    }
-                %>
+                <br>
+                <div class="card">
+                    <div class="card-body">
+
+                    </div>
+                </div>
+                <br>
+                <div class="card">
+                    <div class="card-body">
+
+                    </div>
+                </div>
+                <%}%>
+                <%}%>
             </div>
         </div>
     </body>

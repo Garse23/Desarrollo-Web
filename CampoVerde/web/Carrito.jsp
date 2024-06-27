@@ -1,9 +1,14 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="modelo.Carrito" %>
 <%@ page import="controladores.ProductoServlet" %>
 <%@ page import="modelo.Producto" %>
 <%@ page import="java.util.List" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="en">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Carrito</title>
+    </head>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,7 +19,8 @@
     </head>
     <% String nombreUsuario = (String) session.getAttribute("nombreUsuario");
    Integer rolUsuario = (Integer) session.getAttribute("rolUsuario");
-    Integer IdUsuario = (Integer) session.getAttribute("idUsuario");%>
+    Integer IdUsuario = (Integer) session.getAttribute("idUsuario");
+    List<Carrito> carrito = (List<Carrito>) session.getAttribute("carrito");%>
     <body>
         <header>
             <nav class="navbar navbar-dark">
@@ -51,10 +57,10 @@
                                     <%
                                     default:%>
                                 <li><a class="dropdown-item text-bg-danger" href="CerrarSesion">Cerrar Sesión</a></li>
-                                <%
-                                        break;
-                                }
-                            }%>
+                                    <%
+                                            break;
+                                    }
+                                }%>
                             </ul>
                         </div>
                     </div>
@@ -73,57 +79,75 @@
                     </div>
                 </div>
             </nav>
-            <div class="container-fluid">
-                <div class="navbar navbar-brand" style="background-color: #4CAF50">
-                    <div class="row w-100 text-center">
-                        <div class ="col-4">
-                            <a href="index.jsp" class="btn btn-outline-light">Inicio</a>
-                        </div>
-                        <div class ="col-4">
-                            <a href="productos.jsp" class="btn btn-outline-light">Productos</a>
-                        </div>
-                        <div class ="col-4">
-                            <a href="#sobre-nosotros" class="btn btn-outline-light">Sobre nosotros</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <nav style="background: #4caf50">
+                <br>
+            </nav>
         </header>
-        <div class="container-fluid"> 
-            <img src="imagenes/anuncio.png" alt="" style="width:98.95%">
-        </div>
-        <br>
-        <div class="container-fluid">
-            <div class="row">
-                <% 
+        <div class="container">
+            <div class="col-6">
+                <h1>Carrito de Compras</h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Precio</th>
+                            <th>ID Categoría</th>
+                            <th>Eliminar</th> 
+                            <th>Editar</th>
+                        </tr>
+                    </thead>
+                    <% 
                     ProductoServlet productoServlet = new ProductoServlet();
                     List<Producto> productos = null;
                     try {
                         productos = productoServlet.obtenerProductosHabilitados();
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
-            
-                    if (productos != null) {
+                    }%>
+
+                    <% if (carrito != null) { %>
+                    <% for (Carrito c : carrito) { %>
+                    <%if (productos != null) {
                         for (Producto producto : productos) {
-                %>
-                <div class="card col-3">
-                    <form action="AgregarCarrito" method="post">
-                    <div class="card-body">
-                        <img src="imagenes/anuncio.png" alt="Producto" style="width: 100%">
-                        <input type="hidden" id="idProducto" name="idProducto" value="<%=producto.getIdProducto()%>">
-                        <input type="hidden" id="cantidad" name="cantidad" value="1">
-                        <input type="hidden" id="origen" name="origen" value="index">
-                        <h3><%= producto.getNomProducto()%></h3>
-                        <p>Precio: $<%= producto.getPrecioProducto() %></p>
-                        <button class="btn btn-success">Agregar al carrito</button>
-                    </div>
-                    </form>
-                </div>
-                <% 
-                        }
-                    }
-                %>
+                        if (producto.getIdProducto()==c.getProducto()){
+                    %>
+                    <tbody>
+                        <tr>
+                            <td><%= producto.getIdProducto() %></td>
+                            <td><%= producto.getNomProducto()%></td>
+                            <td>
+                                <form action="CambiarCantidad" method="post">
+                                    <input type="hidden" id="idProducto" name="idProducto" value="<%=c.getProducto()%>">
+                                    <input type="number" id="cantidad" name="cantidad" value="<%= c.getCantidad()%>" class="btn btn-outline-dark" style="width: 80px">
+                                </form>
+                            </td>
+                            <td><%= producto.getPrecioProducto()*c.getCantidad()%></td>
+                            <td><%=producto.getIdCategoria()%></td>
+                            <td>
+                                <form action="EliminarCarrito" method="post"> 
+                                    <input type="hidden" name="idProducto" value=""> 
+                                    <button type="submit" class="btn btn-dark">Eliminar</button> 
+                                </form>
+                            </td>
+                            <td>
+                                <form> 
+                                    <input type="hidden" name="idProducto" value="">
+                                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#ModalEditar">Editar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <% } %>
+                    <% } %>
+                    <% } %>
+                    <% } %>
+                </table>
+                <form action="ProcesarCompra" method="post">
+                    <input type="submit" class="btn btn-success" name="compra" id="compra" value="Procesar compra">
+                </form>
+                <% }%>
             </div>
         </div>
     </body>
